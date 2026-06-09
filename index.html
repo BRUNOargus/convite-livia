@@ -2,80 +2,105 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Carta de Hogwarts</title>
+<title>Convite Hogwarts</title>
 
 <style>
 body {
     margin: 0;
-    background: black;
-    color: white;
-    text-align: center;
-    font-family: Georgia, serif;
+    font-family: 'Georgia', serif;
+    overflow: hidden;
 }
 
-.tela {
-    height: 100vh;
+/* FUNDO CASTELO */
+.fundo {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: url('https://images.unsplash.com/photo-1608889825103-eb5ed706fc64') no-repeat center;
+    background-size: cover;
+    filter: brightness(0.4);
+}
+
+/* SOBREPOSIÇÃO ESCURA */
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
-}
-
-button {
-    padding: 15px;
-    font-size: 18px;
-    background: darkred;
+    align-items: center;
     color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
 }
 
+/* TEXTO */
+.titulo {
+    font-size: 40px;
+    margin-bottom: 20px;
+}
+
+/* ENVELOPE */
 .envelope {
-    width: 200px;
+    width: 180px;
     cursor: pointer;
-    transition: 0.4s;
+    transition: transform 0.5s;
 }
+
 .envelope:hover {
-    transform: scale(1.1);
+    transform: scale(1.1) rotate(-3deg);
 }
 
+/* CARTA */
 .carta {
-    display: none;
+    position: absolute;
+    width: 60%;
     background: #f5e6c8;
-    color: black;
-    margin: 30px auto;
-    padding: 30px;
-    width: 70%;
-    border: 5px solid darkred;
+    padding: 40px;
+    border: 6px solid #8b0000;
     border-radius: 10px;
+    display: none;
+    color: black;
+    animation: abrirCarta 1.5s ease;
 }
-</style>
 
+@keyframes abrirCarta {
+    from {
+        transform: scale(0.5) rotate(-10deg);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+    }
+}
+
+h1 {
+    font-size: 45px;
+}
+
+</style>
 </head>
 
 <body>
 
-<div class="tela" id="inicio">
-    <h1>🦉 Uma coruja deixou uma carta para você</h1>
-    <button onclick="abrirEnvelope()">Abrir entrega</button>
-</div>
+<div class="fundo"></div>
 
-<div id="envelopeTela" class="tela" style="display:none;">
-    <h2>Clique no envelope</h2>
-    <img class="envelope"
-    src="https://cdn-icons-png.flaticon.com/512/1040/1040230.png"
-    onclick="abrirCarta()">
+<div class="overlay" id="inicio">
+    <div class="titulo">🦉 Uma coruja trouxe sua carta...</div>
+
+    https://cdn-icons-png.flaticon.com/512/1040/1040230.png">
 </div>
 
 <div id="carta" class="carta">
-    <h2>📜 Escola de Magia e Bruxaria de Hogwarts</h2>
+    <h2>Escola de Magia e Bruxaria de Hogwarts</h2>
 
-    <p>Você foi convocado(a) para um evento mágico!</p>
+    <p>Temos o prazer de informar que você foi selecionado(a)
+    para um evento mágico!</p>
 
-    <h1>LÍVIA ⚡</h1>
+    <h1>🧙‍♀️ LÍVIA ⚡</h1>
     <p>está completando <b>9 anos</b></p>
 
-    <p>Prepare sua varinha!</p>
+    <p>Prepare sua varinha e venha viver essa experiência!</p>
 
     <hr>
 
@@ -89,13 +114,8 @@ button {
 </div>
 
 <script>
-function abrirEnvelope() {
-    document.getElementById("inicio").style.display = "none";
-    document.getElementById("envelopeTela").style.display = "flex";
-}
-
 function abrirCarta() {
-    document.getElementById("envelopeTela").style.display = "none";
+    document.getElementById("inicio").style.display = "none";
     document.getElementById("carta").style.display = "block";
 }
 </script>
