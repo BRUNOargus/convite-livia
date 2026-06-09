@@ -1,185 +1,145 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Convite Hogwarts</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Convite Mágico da Lívia</title>
 
-<style>
-body {
-    margin: 0;
-    overflow: hidden;
-    font-family: Georgia, serif;
-    color: white;
-}
-
-/* FUNDO */
-.fundo {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(#0b0c1a, #000);
-}
-
-/* ESTRELAS */
-.estrelas {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: transparent;
-}
-
-.estrelas::after {
-    content: "";
-    position: absolute;
-    width: 3px;
-    height: 3px;
-    background: white;
-    box-shadow:
-        100px 200px white,
-        300px 400px white,
-        500px 100px white,
-        800px 600px white,
-        1200px 300px white,
-        1500px 500px white;
-    animation: piscar 2s infinite;
-}
-
-@keyframes piscar {
-    0%,100% {opacity: 0.5;}
-    50% {opacity: 1;}
-}
-
-/* TELA */
-.overlay {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-/* CORUJA */
-.corujeira {
-    font-size: 50px;
-    animation: voar 2s infinite alternate;
-}
-
-@keyframes voar {
-    from { transform: translateX(-20px); }
-    to { transform: translateX(20px); }
-}
-
-/* ENVELOPE */
-.envelope {
-    width: 150px;
-    margin-top: 20px;
-    cursor: pointer;
-    transition: 0.4s;
-}
-
-.envelope:hover {
-    transform: scale(1.1) rotate(3deg);
-}
-
-/* CARTA */
-.carta {
-    display: none;
-    position: absolute;
-    width: 60%;
-    background: #f5e6c8;
-    color: black;
-    padding: 40px;
-    border: 6px solid #8b0000;
-    border-radius: 10px;
-    animation: abrir 1.5s;
-}
-
-/* ANIMAÇÃO PERGAMINHO */
-@keyframes abrir {
-    from {
-        transform: scaleY(0);
-        opacity: 0;
+  <style>
+    :root{
+      --gold:#f0d48a;
+      --paper-1:#f8ecd0;
+      --paper-2:#eed6a6;
+      --ink:#2d1d08;
+      --burgundy:#6c1121;
+      --burgundy-dark:#3d0912;
+      --shadow:rgba(0,0,0,.45);
+      --sky-top:#08111f;
+      --sky-mid:#132342;
+      --sky-bottom:#1a1027;
+      --moon:#f8f0d8;
     }
-    to {
-        transform: scaleY(1);
-        opacity: 1;
+
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(circle at 50% 22%, rgba(255,255,255,.12), transparent 16%),
+        linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-mid) 45%, var(--sky-bottom) 100%);
+      color:#fff;
+      overflow:hidden;
     }
-}
 
-h1 {
-    font-size: 40px;
-}
+    /* Camadas principais */
+    .sky,
+    .fog,
+    .castle,
+    .glow,
+    .owl,
+    .scene,
+    #stars,
+    #dust {
+      position: fixed;
+      inset: 0;
+    }
 
-</style>
-</head>
+    #stars, #dust {
+      width:100%;
+      height:100%;
+      pointer-events:none;
+    }
 
-<body>
+    .glow{
+      background:
+        radial-gradient(circle at 50% 20%, rgba(255,236,185,.09), transparent 20%),
+        radial-gradient(circle at 10% 30%, rgba(123,162,255,.08), transparent 18%),
+        radial-gradient(circle at 90% 25%, rgba(255,190,125,.08), transparent 16%);
+      pointer-events:none;
+    }
 
-<!-- SOM -->
-<audio id="audio" src="https://www.soundjay.com/magic/magic-chime-01.mp3"></audio>
+    .moon{
+      position: fixed;
+      top: 7vh;
+      right: 8vw;
+      width: min(11vw, 130px);
+      aspect-ratio:1;
+      border-radius:50%;
+      background:
+        radial-gradient(circle at 30% 30%, #fffef2 0%, var(--moon) 50%, #dbcaa5 100%);
+      box-shadow:
+        0 0 30px rgba(248,240,216,.55),
+        0 0 80px rgba(248,240,216,.18);
+      opacity:.9;
+      z-index:1;
+    }
 
-<div class="fundo"></div>
-<div class="estrelas"></div>
+    /* Castelo em SVG */
+    .castle{
+      bottom:0;
+      top:auto;
+      height:min(43vh, 380px);
+      z-index:2;
+      filter: drop-shadow(0 -8px 18px rgba(0,0,0,.55));
+      opacity:.96;
+      pointer-events:none;
+    }
+    .castle svg{
+      width:100%;
+      height:100%;
+      display:block;
+    }
 
-<div class="overlay" id="inicio">
-    <div class="corujeira">🦉</div>
+    /* Névoa */
+    .fog{
+      z-index:3;
+      pointer-events:none;
+      overflow:hidden;
+    }
+    .fog-layer{
+      position:absolute;
+      left:-20%;
+      width:140%;
+      height:34%;
+      border-radius:50%;
+      filter: blur(18px);
+      opacity:.22;
+      background:
+        radial-gradient(circle at 20% 50%, rgba(210,225,255,.55), transparent 18%),
+        radial-gradient(circle at 38% 48%, rgba(220,230,255,.45), transparent 17%),
+        radial-gradient(circle at 55% 52%, rgba(230,240,255,.50), transparent 16%),
+        radial-gradient(circle at 72% 46%, rgba(220,235,255,.42), transparent 17%),
+        radial-gradient(circle at 88% 51%, rgba(225,238,255,.46), transparent 16%);
+      animation: drift linear infinite;
+    }
+    .fog-1{ bottom: 10vh; animation-duration: 38s; }
+    .fog-2{ bottom: 4vh; opacity:.28; animation-duration: 52s; animation-direction: reverse; }
+    .fog-3{ bottom: 16vh; opacity:.16; animation-duration: 64s; }
 
-    <h2 id="mensagem"></h2>
+    @keyframes drift{
+      from{ transform: translateX(0); }
+      to{ transform: translateX(10%); }
+    }
 
-    <img class="envelope"
-    src="https://cdn-icons-png.flaticon.com/512/1040/1040230.png"
-    onclick="abrirCarta()">
-</div>
+    /* Coruja voando */
+    .owl{
+      z-index:7;
+      pointer-events:none;
+      overflow:hidden;
+    }
+    .owl span{
+      position:absolute;
+      top:16vh;
+      left:-12vw;
+      font-size: clamp(34px, 4vw, 58px);
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,.4));
+      animation: flyAcross 16s linear infinite;
+    }
 
-<div class="carta" id="carta">
-    <h2>Escola de Magia e Bruxaria de Hogwarts</h2>
-
-    <p id="nomeConvite"></p>
-
-    <h1>🧙‍♀️ LÍVIA ⚡</h1>
-    <p>está completando <b>9 anos</b></p>
-
-    <p>Prepare sua varinha!</p>
-
-    <hr>
-
-    <p>📅 Data: ___</p>
-    <p>⏰ Horário: ___</p>
-    <p>📍 Local: ___</p>
-
-    <hr>
-
-    <p>🚂 Plataforma 9¾ espera por você</p>
-</div>
-
-<script>
-
-/* PEGAR NOME DO LINK */
-const params = new URLSearchParams(window.location.search);
-const nome = params.get("nome");
-
-/* PERSONALIZAÇÃO */
-if(nome){
-    document.getElementById("mensagem").innerText =
-        "Sr(a). " + nome + ", uma coruja trouxe sua carta...";
-    
-    document.getElementById("nomeConvite").innerText =
-        "Prezado(a) " + nome + ",";
-} else {
-    document.getElementById("mensagem").innerText =
-        "Uma coruja trouxe sua carta...";
-}
-
-/* ABRIR CARTA */
-function abrirCarta(){
-    document.getElementById("inicio").style.display = "none";
-    document.getElementById("carta").style.display = "block";
-    document.getElementById("audio").play();
-}
-
-</script>
-
-</body>
-</html>
+    @keyframes flyAcross{
+      0%   { transform: translate(-10vw, 0) scale(.8) rotate(-2deg); opacity:0; }
+      8%   { opacity:1; }
+      22%  { transform: translate(20vw, -2vh) scale(.92) rotate(3deg); }
+      40%  { transform: translate(45vw, 1vh) scale(1) rotate(-1deg); }
+      60%  { transform: translate(68vw, -3vh) scale(.96) rotate(4deg); }
+      85%  { opacity:1; }
