@@ -7,21 +7,20 @@
 <style>
 body {
     margin: 0;
-    font-family: 'Georgia', serif;
+    font-family: Georgia, serif;
     overflow: hidden;
 }
 
-/* FUNDO CASTELO */
+/* FUNDO MÁGICO (CASTELO) */
 .fundo {
     position: fixed;
     width: 100%;
     height: 100%;
-    background: url('https://images.unsplash.com/photo-1608889825103-eb5ed706fc64') no-repeat center;
+    background: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470') no-repeat center;
     background-size: cover;
     filter: brightness(0.4);
 }
 
-/* SOBREPOSIÇÃO ESCURA */
 .overlay {
     position: absolute;
     width: 100%;
@@ -35,7 +34,7 @@ body {
 
 /* TEXTO */
 .titulo {
-    font-size: 40px;
+    font-size: 36px;
     margin-bottom: 20px;
 }
 
@@ -43,11 +42,11 @@ body {
 .envelope {
     width: 180px;
     cursor: pointer;
-    transition: transform 0.5s;
+    transition: 0.4s;
 }
 
 .envelope:hover {
-    transform: scale(1.1) rotate(-3deg);
+    transform: scale(1.1);
 }
 
 /* CARTA */
@@ -60,16 +59,16 @@ body {
     border-radius: 10px;
     display: none;
     color: black;
-    animation: abrirCarta 1.5s ease;
+    animation: aparecer 1.5s;
 }
 
-@keyframes abrirCarta {
+@keyframes aparecer {
     from {
-        transform: scale(0.5) rotate(-10deg);
+        transform: scale(0.6);
         opacity: 0;
     }
     to {
-        transform: scale(1) rotate(0);
+        transform: scale(1);
         opacity: 1;
     }
 }
@@ -88,7 +87,10 @@ h1 {
 <div class="overlay" id="inicio">
     <div class="titulo">🦉 Uma coruja trouxe sua carta...</div>
 
-    https://cdn-icons-png.flaticon.com/512/1040/1040230.png">
+    <!-- ENVELOPE CORRIGIDO -->
+    <img class="envelope"
+         src="https://cdn-icons-png.flaticon.com/512/1040/1040230.png"
+         onclick="abrirCarta()">
 </div>
 
 <div id="carta" class="carta">
@@ -105,20 +107,3 @@ h1 {
     <hr>
 
     <p>📅 Data: ___</p>
-    <p>⏰ Horário: ___</p>
-    <p>📍 Local: ___</p>
-
-    <hr>
-
-    <p>🚂 Plataforma 9¾ espera por você</p>
-</div>
-
-<script>
-function abrirCarta() {
-    document.getElementById("inicio").style.display = "none";
-    document.getElementById("carta").style.display = "block";
-}
-</script>
-
-</body>
-</html>
