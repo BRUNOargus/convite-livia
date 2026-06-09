@@ -1,413 +1,64 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Convite Mágico da Lívia - Harry Potter</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+package com.livia.harrypotter;
 
-        body {
-            font-family: 'Georgia', serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-        }
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-        .container {
-            position: relative;
-            width: 90%;
-            max-width: 900px;
-            height: 600px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-            overflow: hidden;
-        }
+public class Main extends JFrame {
 
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, #0a0a1a 0%, #1a1a3a 50%, #2a1a4a 100%);
-        }
+    public Main() {
+        setTitle("Convite Mágico da Lívia");
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null); // Centraliza a janela
 
-        .info-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 20px;
-            color: #f0d48a;
-            font-size: 14px;
-            text-align: center;
-            border-top: 2px solid #d4af37;
-        }
+        // Painel principal com tema de Harry Potter
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.setBackground(new Color(50, 25, 50)); // Cor de fundo escura, como o céu noturno de Hogwarts
 
-        .button-group {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
-        }
+        // Título do convite
+        JLabel titleLabel = new JLabel("Você está convidado para...", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Serif", Font.BOLD, 36));
+        titleLabel.setForeground(new Color(255, 223, 0)); // Dourado, como as cores de Hogwarts
+        mainPanel.add(titleLabel, BorderLayout.NORTH);
 
-        button {
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #8b0000 0%, #d4af37 100%);
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
+        // Informações do convite
+        JTextArea inviteText = new JTextArea();
+        inviteText.setText("\nO aniversário de 9 anos da Lívia será uma celebração mágica no mundo de Harry Potter!\n\nData: [Data do Aniversário]\nHora: [Hora do Aniversário]\nLocal: [Endereço do Local]\n\nPrepare sua varinha e venha celebrar conosco!\n\nRSVP: [Contato para RSVP]");
+        inviteText.setFont(new Font("Serif", Font.PLAIN, 20));
+        inviteText.setForeground(new Color(255, 255, 255)); // Texto branco
+        inviteText.setBackground(new Color(50, 25, 50));
+        inviteText.setEditable(false);
+        inviteText.setLineWrap(true);
+        inviteText.setWrapStyleWord(true);
+        inviteText.setBorder(BorderFactory.createEmptyBorder(20, 50, 20, 50));
+        mainPanel.add(inviteText, BorderLayout.CENTER);
 
-        button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-        }
-
-        .title {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: #f0d48a;
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-            z-index: 10;
-            pointer-events: none;
-        }
-
-        .title h1 {
-            font-size: 48px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
-
-        .title p {
-            font-size: 24px;
-            color: #fff;
-            margin-bottom: 20px;
-        }
-
-        .magic-text {
-            font-size: 18px;
-            color: #d4af37;
-            font-style: italic;
-            animation: glow 2s ease-in-out infinite;
-        }
-
-        @keyframes glow {
-            0%, 100% { text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
-            50% { text-shadow: 0 0 30px rgba(212, 175, 55, 1); }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <canvas id="magicCanvas"></canvas>
-        <div class="title">
-            <h1>Você está convidado!</h1>
-            <p>Para o aniversário mágico de</p>
-            <h2 style="font-size: 42px; color: #d4af37; margin: 10px 0;">Lívia</h2>
-            <p class="magic-text">9 anos de magia e aventura em Hogwarts</p>
-        </div>
-        <div class="button-group">
-            <button onclick="toggleAnimation()">Pausar Animação</button>
-            <button onclick="downloadInvite()">Baixar Convite</button>
-        </div>
-        <div class="info-overlay">
-            <p><strong>Data:</strong> [Insira a data] | <strong>Hora:</strong> [Insira a hora] | <strong>Local:</strong> [Insira o local]</p>
-            <p style="margin-top: 10px;">RSVP: [Insira o contato para confirmar presença]</p>
-        </div>
-    </div>
-
-    <script>
-        const canvas = document.getElementById('magicCanvas');
-        const ctx = canvas.getContext('2d');
-        let animationId;
-        let isAnimating = true;
-
-        // Redimensionar canvas para preencher o container
-        function resizeCanvas() {
-            const container = canvas.parentElement;
-            canvas.width = container.offsetWidth;
-            canvas.height = container.offsetHeight;
-        }
-
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-
-        // Classe para partículas mágicas
-        class MagicParticle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 3 + 1;
-                this.speedX = (Math.random() - 0.5) * 2;
-                this.speedY = (Math.random() - 0.5) * 2;
-                this.opacity = Math.random() * 0.5 + 0.5;
-                this.color = ['#d4af37', '#f0d48a', '#ffd700', '#ffed4e'][Math.floor(Math.random() * 4)];
-            }
-
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                this.opacity -= 0.01;
-
-                // Envolver ao redor das bordas
-                if (this.x < 0) this.x = canvas.width;
-                if (this.x > canvas.width) this.x = 0;
-                if (this.y < 0) this.y = canvas.height;
-                if (this.y > canvas.height) this.y = 0;
-            }
-
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.globalAlpha = this.opacity;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.globalAlpha = 1;
-            }
-        }
-
-        // Classe para estrelas
-        class Star {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2;
-                this.opacity = Math.random() * 0.5 + 0.5;
-                this.twinkleSpeed = Math.random() * 0.05 + 0.02;
-            }
-
-            update() {
-                this.opacity += this.twinkleSpeed;
-                if (this.opacity > 1 || this.opacity < 0.3) {
-                    this.twinkleSpeed *= -1;
-                }
-            }
-
-            draw() {
-                ctx.fillStyle = '#ffffff';
-                ctx.globalAlpha = this.opacity;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.globalAlpha = 1;
-            }
-        }
-
-        // Inicializar partículas e estrelas
-        const particles = [];
-        const stars = [];
-
-        for (let i = 0; i < 50; i++) {
-            particles.push(new MagicParticle());
-        }
-
-        for (let i = 0; i < 100; i++) {
-            stars.push(new Star());
-        }
-
-        // Função para desenhar a lua
-        function drawMoon() {
-            const moonX = canvas.width - 100;
-            const moonY = 80;
-            const moonRadius = 50;
-
-            // Gradiente da lua
-            const moonGradient = ctx.createRadialGradient(moonX - 15, moonY - 15, 0, moonX, moonY, moonRadius);
-            moonGradient.addColorStop(0, '#ffffff');
-            moonGradient.addColorStop(0.7, '#f0d48a');
-            moonGradient.addColorStop(1, '#d4af37');
-
-            ctx.fillStyle = moonGradient;
-            ctx.beginPath();
-            ctx.arc(moonX, moonY, moonRadius, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Sombra da lua
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-            ctx.beginPath();
-            ctx.arc(moonX + 20, moonY + 20, moonRadius, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        // Função para desenhar o castelo de Hogwarts (simplificado)
-        function drawCastle() {
-            const castleX = 100;
-            const castleY = canvas.height - 150;
-
-            // Torres principais
-            ctx.fillStyle = '#2a1a1a';
-            for (let i = 0; i < 3; i++) {
-                ctx.fillRect(castleX + i * 80, castleY, 40, 150);
-                // Telhado das torres
-                ctx.fillStyle = '#8b0000';
-                ctx.beginPath();
-                ctx.moveTo(castleX + i * 80, castleY);
-                ctx.lineTo(castleX + i * 80 + 20, castleY - 30);
-                ctx.lineTo(castleX + i * 80 + 40, castleY);
-                ctx.fill();
-                ctx.fillStyle = '#2a1a1a';
-            }
-
-            // Parede central
-            ctx.fillRect(castleX + 30, castleY + 30, 200, 100);
-
-            // Janelas
-            ctx.fillStyle = '#ffed4e';
-            for (let i = 0; i < 5; i++) {
-                for (let j = 0; j < 3; j++) {
-                    ctx.fillRect(castleX + 50 + i * 40, castleY + 50 + j * 30, 15, 15);
-                }
-            }
-        }
-
-        // Função para desenhar varinhas mágicas
-        function drawWands() {
-            const wandCount = 3;
-            for (let i = 0; i < wandCount; i++) {
-                const wandX = (canvas.width / (wandCount + 1)) * (i + 1);
-                const wandY = canvas.height - 50;
-                const angle = Math.sin(Date.now() * 0.001 + i) * 0.3;
-
-                ctx.save();
-                ctx.translate(wandX, wandY);
-                ctx.rotate(angle);
-
-                // Cabo da varinha
-                ctx.strokeStyle = '#8b4513';
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                ctx.moveTo(0, 0);
-                ctx.lineTo(0, -60);
-                ctx.stroke();
-
-                // Ponta da varinha
-                ctx.fillStyle = '#d4af37';
-                ctx.beginPath();
-                ctx.arc(0, -65, 5, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Faísca mágica
-                ctx.fillStyle = 'rgba(212, 175, 55, 0.8)';
-                ctx.beginPath();
-                ctx.arc(0, -70, 3, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.restore();
-            }
-        }
-
-        // Função de animação principal
-        function animate() {
-            // Limpar canvas
-            ctx.fillStyle = 'rgba(10, 10, 26, 0.2)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Desenhar e atualizar estrelas
-            stars.forEach(star => {
-                star.update();
-                star.draw();
-            });
-
-            // Desenhar lua
-            drawMoon();
-
-            // Desenhar castelo
-            drawCastle();
-
-            // Desenhar varinhas
-            drawWands();
-
-            // Atualizar e desenhar partículas
-            particles.forEach((particle, index) => {
-                particle.update();
-                particle.draw();
-
-                // Recriar partículas que desapareceram
-                if (particle.opacity <= 0) {
-                    particles[index] = new MagicParticle();
-                }
-            });
-
-            // Adicionar novas partículas aleatoriamente
-            if (Math.random() < 0.3) {
-                particles.push(new MagicParticle());
-                if (particles.length > 100) {
-                    particles.shift();
-                }
-            }
-
-            if (isAnimating) {
-                animationId = requestAnimationFrame(animate);
-            }
-        }
-
-        // Iniciar animação
-        animate();
-
-        // Função para pausar/retomar animação
-        function toggleAnimation() {
-            isAnimating = !isAnimating;
-            if (isAnimating) {
-                animate();
-            }
-        }
-
-        // Função para baixar o convite como imagem
-        function downloadInvite() {
-            const link = document.createElement('a');
-            link.href = canvas.toDataURL('image/png');
-            link.download = 'convite-livia-harrypotter.png';
-            link.click();
-        }
-
-        // Adicionar interatividade ao mouse
-        canvas.addEventListener('mousemove', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            // Criar partículas no cursor
-            for (let i = 0; i < 2; i++) {
-                const particle = new MagicParticle();
-                particle.x = x;
-                particle.y = y;
-                particles.push(particle);
+        // Botão de RSVP
+        JButton rsvpButton = new JButton("Confirmar Presença");
+        rsvpButton.setFont(new Font("Serif", Font.BOLD, 18));
+        rsvpButton.setBackground(new Color(139, 0, 0)); // Vermelho Gryffindor
+        rsvpButton.setForeground(new Color(255, 223, 0)); // Dourado
+        rsvpButton.setFocusPainted(false);
+        rsvpButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(mainPanel, "Obrigado por confirmar! Entraremos em contato para mais detalhes.", "RSVP", JOptionPane.INFORMATION_MESSAGE);
             }
         });
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(new Color(50, 25, 50));
+        buttonPanel.add(rsvpButton);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        // Criar partículas ao clicar
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+        add(mainPanel);
+    }
 
-            for (let i = 0; i < 20; i++) {
-                const particle = new MagicParticle();
-                particle.x = x;
-                particle.y = y;
-                particle.speedX = (Math.random() - 0.5) * 5;
-                particle.speedY = (Math.random() - 0.5) * 5;
-                particles.push(particle);
-            }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            new Main().setVisible(true);
         });
-    </script>
-</body>
-</html>
-
+    }
+}
