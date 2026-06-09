@@ -1,64 +1,737 @@
-package com.livia.harrypotter;
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convite Mágico da Lívia - Harry Potter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a0a2e 50%, #0f0a1a 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            color: #fff;
+        }
 
-public class Main extends JFrame {
+        .scene-container {
+            position: relative;
+            width: 95vw;
+            height: 95vh;
+            max-width: 1200px;
+            max-height: 800px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+            box-shadow: 0 0 100px rgba(212, 175, 55, 0.3), 0 20px 60px rgba(0, 0, 0, 0.9);
+            overflow: hidden;
+            border: 3px solid rgba(212, 175, 55, 0.2);
+        }
 
-    public Main() {
-        setTitle("Convite Mágico da Lívia");
-        setSize(800, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // Centraliza a janela
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
 
-        // Painel principal com tema de Harry Potter
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
-        mainPanel.setBackground(new Color(50, 25, 50)); // Cor de fundo escura, como o céu noturno de Hogwarts
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
 
-        // Título do convite
-        JLabel titleLabel = new JLabel("Você está convidado para...", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Serif", Font.BOLD, 36));
-        titleLabel.setForeground(new Color(255, 223, 0)); // Dourado, como as cores de Hogwarts
-        mainPanel.add(titleLabel, BorderLayout.NORTH);
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #8b0000 0%, #d4af37 100%);
+            color: #fff;
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
 
-        // Informações do convite
-        JTextArea inviteText = new JTextArea();
-        inviteText.setText("\nO aniversário de 9 anos da Lívia será uma celebração mágica no mundo de Harry Potter!\n\nData: [Data do Aniversário]\nHora: [Hora do Aniversário]\nLocal: [Endereço do Local]\n\nPrepare sua varinha e venha celebrar conosco!\n\nRSVP: [Contato para RSVP]");
-        inviteText.setFont(new Font("Serif", Font.PLAIN, 20));
-        inviteText.setForeground(new Color(255, 255, 255)); // Texto branco
-        inviteText.setBackground(new Color(50, 25, 50));
-        inviteText.setEditable(false);
-        inviteText.setLineWrap(true);
-        inviteText.setWrapStyleWord(true);
-        inviteText.setBorder(BorderFactory.createEmptyBorder(20, 50, 20, 50));
-        mainPanel.add(inviteText, BorderLayout.CENTER);
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
+            background: linear-gradient(135deg, #a00000 0%, #e4c050 100%);
+        }
 
-        // Botão de RSVP
-        JButton rsvpButton = new JButton("Confirmar Presença");
-        rsvpButton.setFont(new Font("Serif", Font.BOLD, 18));
-        rsvpButton.setBackground(new Color(139, 0, 0)); // Vermelho Gryffindor
-        rsvpButton.setForeground(new Color(255, 223, 0)); // Dourado
-        rsvpButton.setFocusPainted(false);
-        rsvpButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(mainPanel, "Obrigado por confirmar! Entraremos em contato para mais detalhes.", "RSVP", JOptionPane.INFORMATION_MESSAGE);
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .info-panel {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.5));
+            padding: 20px;
+            color: #f0d48a;
+            font-size: 14px;
+            text-align: center;
+            border-top: 2px solid #d4af37;
+            z-index: 50;
+        }
+
+        .info-panel p {
+            margin: 5px 0;
+            line-height: 1.6;
+        }
+
+        .loading-screen {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #1a0a2e 0%, #0f0a1a 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            opacity: 1;
+            transition: opacity 3s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-text {
+            color: #d4af37;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(212, 175, 55, 0.3);
+            border-top: 4px solid #d4af37;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="scene-container">
+        <canvas id="mainCanvas"></canvas>
+        <div class="controls">
+            <button onclick="toggleAnimation()">⏸ Pausar</button>
+            <button onclick="downloadInvite()">📥 Baixar</button>
+            <button onclick="resetScene()">🔄 Reiniciar</button>
+        </div>
+        <div class="info-panel">
+            <p><strong>📅 Data:</strong> [Insira a data] | <strong>⏰ Hora:</strong> [Insira a hora]</p>
+            <p><strong>📍 Local:</strong> [Insira o local]</p>
+            <p><strong>📞 RSVP:</strong> [Insira o contato para confirmar presença]</p>
+        </div>
+        <div class="loading-screen" id="loadingScreen">
+            <div class="loading-text">Preparando a magia...</div>
+            <div class="loading-spinner"></div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d', { alpha: true });
+        const loadingScreen = document.getElementById('loadingScreen');
+        
+        let animationId;
+        let isAnimating = true;
+        let time = 0;
+        let scenePhase = 0; // 0: intro, 1: main, 2: details
+
+        // Redimensionar canvas
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // ==================== CLASSES ====================
+
+        class Particle {
+            constructor(x, y, type = 'magic') {
+                this.x = x;
+                this.y = y;
+                this.type = type;
+                this.life = 1;
+                this.maxLife = Math.random() * 1 + 0.5;
+                
+                if (type === 'magic') {
+                    this.vx = (Math.random() - 0.5) * 3;
+                    this.vy = (Math.random() - 0.5) * 3 - 1;
+                    this.size = Math.random() * 4 + 2;
+                    this.color = ['#d4af37', '#f0d48a', '#ffd700', '#ffed4e'][Math.floor(Math.random() * 4)];
+                } else if (type === 'smoke') {
+                    this.vx = (Math.random() - 0.5) * 1;
+                    this.vy = Math.random() * -0.5 - 0.5;
+                    this.size = Math.random() * 30 + 20;
+                    this.color = '#888888';
+                } else if (type === 'spark') {
+                    this.vx = (Math.random() - 0.5) * 4;
+                    this.vy = Math.random() * -2 - 1;
+                    this.size = Math.random() * 2 + 1;
+                    this.color = '#ffaa00';
+                }
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life -= 1 / (this.maxLife * 60);
+                this.vy += 0.05; // gravidade
+            }
+
+            draw(ctx) {
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.life;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+
+            isAlive() {
+                return this.life > 0;
+            }
+        }
+
+        class Star {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height * 0.6;
+                this.size = Math.random() * 1.5;
+                this.opacity = Math.random() * 0.5 + 0.3;
+                this.twinkleSpeed = Math.random() * 0.02 + 0.01;
+                this.phase = Math.random() * Math.PI * 2;
+            }
+
+            update() {
+                this.phase += this.twinkleSpeed;
+                this.opacity = Math.sin(this.phase) * 0.3 + 0.5;
+            }
+
+            draw(ctx) {
+                ctx.fillStyle = '#ffffff';
+                ctx.globalAlpha = this.opacity;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        class Owl {
+            constructor() {
+                this.x = -100;
+                this.y = canvas.height * 0.3;
+                this.speed = 2;
+                this.wingAngle = 0;
+                this.wingSpeed = 0.15;
+            }
+
+            update() {
+                this.x += this.speed;
+                this.wingAngle += this.wingSpeed;
+                if (this.x > canvas.width + 100) {
+                    this.x = -100;
+                }
+            }
+
+            draw(ctx) {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+
+                // Corpo da coruja
+                ctx.fillStyle = '#8b6914';
+                ctx.beginPath();
+                ctx.ellipse(0, 0, 25, 35, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Cabeça
+                ctx.fillStyle = '#8b6914';
+                ctx.beginPath();
+                ctx.arc(0, -25, 20, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Olhos
+                ctx.fillStyle = '#ffff00';
+                ctx.beginPath();
+                ctx.arc(-8, -28, 6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(8, -28, 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Pupilas
+                ctx.fillStyle = '#000000';
+                ctx.beginPath();
+                ctx.arc(-8, -28, 3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(8, -28, 3, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Asas
+                ctx.strokeStyle = '#6b5410';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(-20, 0, 15, 0, Math.PI, Math.cos(this.wingAngle) > 0);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(20, 0, 15, 0, Math.PI, Math.cos(this.wingAngle) < 0);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+        }
+
+        class Wand {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.angle = Math.random() * Math.PI * 2;
+                this.angleSpeed = 0.02;
+                this.length = 80;
+            }
+
+            update() {
+                this.angle += this.angleSpeed;
+            }
+
+            draw(ctx) {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+
+                // Cabo da varinha
+                ctx.strokeStyle = '#8b4513';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(0, -this.length);
+                ctx.stroke();
+
+                // Ponta
+                ctx.fillStyle = '#d4af37';
+                ctx.beginPath();
+                ctx.arc(0, -this.length - 5, 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Faísca
+                ctx.fillStyle = '#ffed4e';
+                ctx.globalAlpha = Math.sin(time * 0.1) * 0.5 + 0.5;
+                ctx.beginPath();
+                ctx.arc(0, -this.length - 10, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+
+                ctx.restore();
+            }
+        }
+
+        // Inicializar elementos
+        const particles = [];
+        const stars = [];
+        const wands = [];
+        let owl;
+
+        for (let i = 0; i < 80; i++) {
+            stars.push(new Star());
+        }
+
+        for (let i = 0; i < 3; i++) {
+            wands.push(new Wand(
+                canvas.width * (0.25 + i * 0.25),
+                canvas.height * 0.85
+            ));
+        }
+
+        owl = new Owl();
+
+        // ==================== DESENHO ====================
+
+        function drawParchmentBackground() {
+            // Textura de pergaminho
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#2a1a0a');
+            gradient.addColorStop(0.5, '#1a1010');
+            gradient.addColorStop(1, '#0a0a0a');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Ruído/textura
+            ctx.globalAlpha = 0.05;
+            for (let i = 0; i < 100; i++) {
+                ctx.fillStyle = Math.random() > 0.5 ? '#ffffff' : '#000000';
+                ctx.fillRect(
+                    Math.random() * canvas.width,
+                    Math.random() * canvas.height,
+                    Math.random() * 3,
+                    Math.random() * 3
+                );
+            }
+            ctx.globalAlpha = 1;
+        }
+
+        function drawMoon() {
+            const moonX = canvas.width - 120;
+            const moonY = 100;
+            const moonRadius = 60;
+
+            const moonGradient = ctx.createRadialGradient(moonX - 20, moonY - 20, 0, moonX, moonY, moonRadius);
+            moonGradient.addColorStop(0, '#ffffff');
+            moonGradient.addColorStop(0.6, '#f0d48a');
+            moonGradient.addColorStop(1, '#d4af37');
+
+            ctx.fillStyle = moonGradient;
+            ctx.beginPath();
+            ctx.arc(moonX, moonY, moonRadius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Aura da lua
+            ctx.strokeStyle = 'rgba(212, 175, 55, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(moonX, moonY, moonRadius + 15, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Sombra
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+            ctx.beginPath();
+            ctx.arc(moonX + 25, moonY + 25, moonRadius, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawCastle() {
+            const castleX = 80;
+            const castleY = canvas.height - 200;
+            const scale = 1.5;
+
+            ctx.fillStyle = '#2a1a1a';
+
+            // Torres principais (5 torres)
+            for (let i = 0; i < 5; i++) {
+                const towerX = castleX + i * 50 * scale;
+                const towerY = castleY;
+                const towerWidth = 35 * scale;
+                const towerHeight = 150 * scale;
+
+                // Torre
+                ctx.fillRect(towerX, towerY, towerWidth, towerHeight);
+
+                // Telhado cônico
+                ctx.fillStyle = '#8b0000';
+                ctx.beginPath();
+                ctx.moveTo(towerX, towerY);
+                ctx.lineTo(towerX + towerWidth / 2, towerY - 40 * scale);
+                ctx.lineTo(towerX + towerWidth, towerY);
+                ctx.fill();
+
+                ctx.fillStyle = '#2a1a1a';
+
+                // Janelas iluminadas
+                for (let j = 0; j < 4; j++) {
+                    ctx.fillStyle = '#ffed4e';
+                    ctx.fillRect(
+                        towerX + 8 * scale,
+                        towerY + 20 * scale + j * 30 * scale,
+                        18 * scale,
+                        18 * scale
+                    );
+
+                    // Luz dentro da janela
+                    ctx.fillStyle = 'rgba(255, 237, 78, 0.3)';
+                    ctx.beginPath();
+                    ctx.arc(
+                        towerX + 17 * scale,
+                        towerY + 29 * scale + j * 30 * scale,
+                        25 * scale,
+                        0,
+                        Math.PI * 2
+                    );
+                    ctx.fill();
+                }
+            }
+
+            // Parede central
+            ctx.fillStyle = '#2a1a1a';
+            ctx.fillRect(castleX + 50 * scale, castleY + 40 * scale, 150 * scale, 80 * scale);
+
+            // Portão principal
+            ctx.fillStyle = '#1a0a0a';
+            ctx.fillRect(castleX + 90 * scale, castleY + 80 * scale, 70 * scale, 80 * scale);
+
+            // Porta do portão
+            ctx.fillStyle = '#8b0000';
+            ctx.fillRect(castleX + 100 * scale, castleY + 90 * scale, 50 * scale, 70 * scale);
+        }
+
+        function drawEnvelope() {
+            const envelopeX = canvas.width / 2 - 150;
+            const envelopeY = canvas.height / 2 - 120;
+            const envelopeWidth = 300;
+            const envelopeHeight = 200;
+
+            // Envelope base
+            ctx.fillStyle = '#f5e6d3';
+            ctx.fillRect(envelopeX, envelopeY + 50, envelopeWidth, envelopeHeight - 50);
+
+            // Aba do envelope
+            ctx.fillStyle = '#e8d4b8';
+            ctx.beginPath();
+            ctx.moveTo(envelopeX, envelopeY + 50);
+            ctx.lineTo(envelopeX + envelopeWidth / 2, envelopeY);
+            ctx.lineTo(envelopeX + envelopeWidth, envelopeY + 50);
+            ctx.fill();
+
+            // Borda da aba
+            ctx.strokeStyle = '#8b6914';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(envelopeX, envelopeY + 50);
+            ctx.lineTo(envelopeX + envelopeWidth / 2, envelopeY);
+            ctx.lineTo(envelopeX + envelopeWidth, envelopeY + 50);
+            ctx.stroke();
+
+            // Lacre
+            ctx.fillStyle = '#8b0000';
+            ctx.beginPath();
+            ctx.arc(envelopeX + envelopeWidth / 2, envelopeY + 100, 25, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#d4af37';
+            ctx.font = 'bold 20px Georgia';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('✦', envelopeX + envelopeWidth / 2, envelopeY + 100);
+        }
+
+        function drawTitle() {
+            const titleX = canvas.width / 2;
+            const titleY = canvas.height / 2 - 50;
+
+            // Sombra do texto
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.font = 'bold 56px Georgia';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Você está convidado!', titleX + 2, titleY + 2);
+
+            // Texto principal com glow
+            ctx.fillStyle = '#d4af37';
+            ctx.shadowColor = 'rgba(212, 175, 55, 0.8)';
+            ctx.shadowBlur = 20;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            ctx.fillText('Você está convidado!', titleX, titleY);
+            ctx.shadowBlur = 0;
+
+            // Subtítulo
+            ctx.font = '28px Georgia';
+            ctx.fillStyle = '#f0d48a';
+            ctx.fillText('Para o aniversário mágico de', titleX, titleY + 50);
+
+            // Nome
+            ctx.font = 'bold 48px Georgia';
+            ctx.fillStyle = '#d4af37';
+            ctx.shadowColor = 'rgba(212, 175, 55, 0.6)';
+            ctx.shadowBlur = 15;
+            ctx.fillText('Lívia', titleX, titleY + 110);
+            ctx.shadowBlur = 0;
+
+            // Idade
+            ctx.font = '32px Georgia';
+            ctx.fillStyle = '#f0d48a';
+            ctx.fillText('9 anos de magia e aventura em Hogwarts', titleX, titleY + 160);
+        }
+
+        function drawMagicEffects() {
+            // Linhas mágicas flutuantes
+            ctx.strokeStyle = 'rgba(212, 175, 55, 0.2)';
+            ctx.lineWidth = 1;
+
+            for (let i = 0; i < 3; i++) {
+                const offset = (time * 0.5 + i * 120) % canvas.width;
+                ctx.beginPath();
+                ctx.moveTo(offset, canvas.height / 2 - 100 - i * 50);
+                ctx.quadraticCurveTo(
+                    offset + 100,
+                    canvas.height / 2 - 100 - i * 50 + Math.sin(time * 0.01) * 20,
+                    offset + 200,
+                    canvas.height / 2 - 100 - i * 50
+                );
+                ctx.stroke();
+            }
+        }
+
+        // ==================== ANIMAÇÃO ====================
+
+        function animate() {
+            time++;
+
+            // Fundo
+            drawParchmentBackground();
+
+            // Céu com gradiente
+            const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            skyGradient.addColorStop(0, 'rgba(10, 10, 30, 0.4)');
+            skyGradient.addColorStop(1, 'rgba(20, 10, 30, 0.2)');
+            ctx.fillStyle = skyGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Estrelas
+            stars.forEach(star => {
+                star.update();
+                star.draw(ctx);
+            });
+
+            // Lua
+            drawMoon();
+
+            // Castelo
+            drawCastle();
+
+            // Efeitos mágicos
+            drawMagicEffects();
+
+            // Varinhas
+            wands.forEach(wand => {
+                wand.update();
+                wand.draw(ctx);
+            });
+
+            // Coruja
+            owl.update();
+            owl.draw(ctx);
+
+            // Envelope (fase 0)
+            if (scenePhase === 0) {
+                drawEnvelope();
+            }
+
+            // Título
+            drawTitle();
+
+            // Partículas
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].draw(ctx);
+                if (!particles[i].isAlive()) {
+                    particles.splice(i, 1);
+                }
+            }
+
+            // Gerar partículas aleatoriamente
+            if (Math.random() < 0.3) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height * 0.7;
+                particles.push(new Particle(x, y, 'magic'));
+            }
+
+            // Partículas das varinhas
+            if (time % 10 === 0) {
+                wands.forEach(wand => {
+                    for (let i = 0; i < 2; i++) {
+                        const angle = wand.angle;
+                        const px = wand.x + Math.cos(angle) * wand.length;
+                        const py = wand.y - Math.sin(angle) * wand.length;
+                        particles.push(new Particle(px, py, 'spark'));
+                    }
+                });
+            }
+
+            if (isAnimating) {
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+
+        // ==================== CONTROLES ====================
+
+        function toggleAnimation() {
+            isAnimating = !isAnimating;
+            if (isAnimating) {
+                animate();
+            }
+        }
+
+        function downloadInvite() {
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = 'convite-livia-harrypotter.png';
+            link.click();
+        }
+
+        function resetScene() {
+            time = 0;
+            scenePhase = 0;
+            particles.length = 0;
+        }
+
+        // ==================== INTERATIVIDADE ====================
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            for (let i = 0; i < 1; i++) {
+                particles.push(new Particle(x, y, 'magic'));
             }
         });
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(new Color(50, 25, 50));
-        buttonPanel.add(rsvpButton);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        add(mainPanel);
-    }
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new Main().setVisible(true);
+            for (let i = 0; i < 30; i++) {
+                const particle = new Particle(x, y, 'magic');
+                particle.vx = (Math.random() - 0.5) * 6;
+                particle.vy = (Math.random() - 0.5) * 6 - 2;
+                particles.push(particle);
+            }
+
+            for (let i = 0; i < 15; i++) {
+                const particle = new Particle(x, y, 'spark');
+                particle.vx = (Math.random() - 0.5) * 8;
+                particle.vy = (Math.random() - 0.5) * 8 - 3;
+                particles.push(particle);
+            }
         });
-    }
-}
+
+        // ==================== INICIALIZAÇÃO ====================
+
+        // Remover tela de carregamento após 2 segundos
+        setTimeout(() => {
+            loadingScreen.classList.add('hidden');
+            animate();
+        }, 2000);
+    </script>
+</body>
+</html>
