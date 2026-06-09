@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Carta de Hogwarts</title>
+
+<style>
+body {
+    margin: 0;
+    background: black;
+    color: white;
+    text-align: center;
+    font-family: Georgia, serif;
+}
+
+.tela {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+button {
+    padding: 15px;
+    font-size: 18px;
+    background: darkred;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.envelope {
+    width: 200px;
+    cursor: pointer;
+    transition: 0.4s;
+}
+.envelope:hover {
+    transform: scale(1.1);
+}
+
+.carta {
+    display: none;
+    background: #f5e6c8;
+    color: black;
+    margin: 30px auto;
+    padding: 30px;
+    width: 70%;
+    border: 5px solid darkred;
+    border-radius: 10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="tela" id="inicio">
+    <h1>🦉 Uma coruja deixou uma carta para você</h1>
+    <button onclick="abrirEnvelope()">Abrir entrega</button>
+</div>
+
+<div id="envelopeTela" class="tela" style="display:none;">
+    <h2>Clique no envelope</h2>
+    <img class="envelope"
+    src="https://cdn-icons-png.flaticon.com/512/1040/1040230.png"
+    onclick="abrirCarta()">
+</div>
+
+<div id="carta" class="carta">
+    <h2>📜 Escola de Magia e Bruxaria de Hogwarts</h2>
+
+    <p>Você foi convocado(a) para um evento mágico!</p>
+
+    <h1>LÍVIA ⚡</h1>
+    <p>está completando <b>9 anos</b></p>
+
+    <p>Prepare sua varinha!</p>
+
+    <hr>
+
+    <p>📅 Data: ___</p>
+    <p>⏰ Horário: ___</p>
+    <p>📍 Local: ___</p>
+
+    <hr>
+
+    <p>🚂 Plataforma 9¾ espera por você</p>
+</div>
+
+<script>
+function abrirEnvelope() {
+    document.getElementById("inicio").style.display = "none";
+    document.getElementById("envelopeTela").style.display = "flex";
+}
+
+function abrirCarta() {
+    document.getElementById("envelopeTela").style.display = "none";
+    document.getElementById("carta").style.display = "block";
+}
+</script>
+
+</body>
+</html>
