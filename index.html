@@ -7,20 +7,49 @@
 <style>
 body {
     margin: 0;
-    font-family: Georgia, serif;
     overflow: hidden;
+    font-family: Georgia, serif;
+    color: white;
 }
 
-/* FUNDO MÁGICO (CASTELO) */
+/* FUNDO */
 .fundo {
     position: fixed;
     width: 100%;
     height: 100%;
-    background: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470') no-repeat center;
-    background-size: cover;
-    filter: brightness(0.4);
+    background: radial-gradient(#0b0c1a, #000);
 }
 
+/* ESTRELAS */
+.estrelas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+}
+
+.estrelas::after {
+    content: "";
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: white;
+    box-shadow:
+        100px 200px white,
+        300px 400px white,
+        500px 100px white,
+        800px 600px white,
+        1200px 300px white,
+        1500px 500px white;
+    animation: piscar 2s infinite;
+}
+
+@keyframes piscar {
+    0%,100% {opacity: 0.5;}
+    50% {opacity: 1;}
+}
+
+/* TELA */
 .overlay {
     position: absolute;
     width: 100%;
@@ -29,52 +58,58 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    color: white;
 }
 
-/* TEXTO */
-.titulo {
-    font-size: 36px;
-    margin-bottom: 20px;
+/* CORUJA */
+.corujeira {
+    font-size: 50px;
+    animation: voar 2s infinite alternate;
+}
+
+@keyframes voar {
+    from { transform: translateX(-20px); }
+    to { transform: translateX(20px); }
 }
 
 /* ENVELOPE */
 .envelope {
-    width: 180px;
+    width: 150px;
+    margin-top: 20px;
     cursor: pointer;
     transition: 0.4s;
 }
 
 .envelope:hover {
-    transform: scale(1.1);
+    transform: scale(1.1) rotate(3deg);
 }
 
 /* CARTA */
 .carta {
+    display: none;
     position: absolute;
     width: 60%;
     background: #f5e6c8;
+    color: black;
     padding: 40px;
     border: 6px solid #8b0000;
     border-radius: 10px;
-    display: none;
-    color: black;
-    animation: aparecer 1.5s;
+    animation: abrir 1.5s;
 }
 
-@keyframes aparecer {
+/* ANIMAÇÃO PERGAMINHO */
+@keyframes abrir {
     from {
-        transform: scale(0.6);
+        transform: scaleY(0);
         opacity: 0;
     }
     to {
-        transform: scale(1);
+        transform: scaleY(1);
         opacity: 1;
     }
 }
 
 h1 {
-    font-size: 45px;
+    font-size: 40px;
 }
 
 </style>
@@ -82,28 +117,69 @@ h1 {
 
 <body>
 
+<!-- SOM -->
+<audio id="audio" src="https://www.soundjay.com/magic/magic-chime-01.mp3"></audio>
+
 <div class="fundo"></div>
+<div class="estrelas"></div>
 
 <div class="overlay" id="inicio">
-    <div class="titulo">🦉 Uma coruja trouxe sua carta...</div>
+    <div class="corujeira">🦉</div>
 
-    <!-- ENVELOPE CORRIGIDO -->
+    <h2 id="mensagem"></h2>
+
     <img class="envelope"
-         src="https://cdn-icons-png.flaticon.com/512/1040/1040230.png"
-         onclick="abrirCarta()">
+    src="https://cdn-icons-png.flaticon.com/512/1040/1040230.png"
+    onclick="abrirCarta()">
 </div>
 
-<div id="carta" class="carta">
+<div class="carta" id="carta">
     <h2>Escola de Magia e Bruxaria de Hogwarts</h2>
 
-    <p>Temos o prazer de informar que você foi selecionado(a)
-    para um evento mágico!</p>
+    <p id="nomeConvite"></p>
 
     <h1>🧙‍♀️ LÍVIA ⚡</h1>
     <p>está completando <b>9 anos</b></p>
 
-    <p>Prepare sua varinha e venha viver essa experiência!</p>
+    <p>Prepare sua varinha!</p>
 
     <hr>
 
     <p>📅 Data: ___</p>
+    <p>⏰ Horário: ___</p>
+    <p>📍 Local: ___</p>
+
+    <hr>
+
+    <p>🚂 Plataforma 9¾ espera por você</p>
+</div>
+
+<script>
+
+/* PEGAR NOME DO LINK */
+const params = new URLSearchParams(window.location.search);
+const nome = params.get("nome");
+
+/* PERSONALIZAÇÃO */
+if(nome){
+    document.getElementById("mensagem").innerText =
+        "Sr(a). " + nome + ", uma coruja trouxe sua carta...";
+    
+    document.getElementById("nomeConvite").innerText =
+        "Prezado(a) " + nome + ",";
+} else {
+    document.getElementById("mensagem").innerText =
+        "Uma coruja trouxe sua carta...";
+}
+
+/* ABRIR CARTA */
+function abrirCarta(){
+    document.getElementById("inicio").style.display = "none";
+    document.getElementById("carta").style.display = "block";
+    document.getElementById("audio").play();
+}
+
+</script>
+
+</body>
+</html>
